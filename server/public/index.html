@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>One Night Ultimate Werewolf</title>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <script src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='/javascripts/script.js'></script>
+    </head>
+    <body>
+        <div id="header">
+            <div id="name">
+                <div id="logo">One Night Ultimate Werewolf</div>
+            </div>
+            <div id="personal">
+                Welcome, <span id="username">Guest</span>!
+            </div>
+        </div>
+        <div id="content">
+            <div id="rooms">
+                <div id="roomheader">rooms</div>
+                <div id="roomcreate" class="blue button">new room</div>
+                <ul id="roomlist">
+                </ul>
+            </div>
+            <div id="main">
+                <div id="mainheader">
+                    <span id="roomname"></span>
+                </div>
+                <div id="roomleave" class="cancel button">leave room</div>
+                <div id="gamenotification"></div>
+                <div id="gameerror"></div>
+                <div id="gameregion">
+                </div>
+                <div id="gamecontrol" class="blue button">|</div>
+            </div>
+        </div>
+        <div id="popup" class="info">
+            <table>
+                <tr>
+                    <td>Room name:</td>
+                    <td><input id="createroomname" type="text"/></td>
+                </tr>
+            </table>
+            <input id="createroom" class="blue button" type="submit" value="Create" />
+            <input id="closecreate" class="cancel button" type="submit" value="Close" />
+        </div>
+    </body>
+</html>

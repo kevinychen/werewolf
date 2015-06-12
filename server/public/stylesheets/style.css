@@ -1,0 +1,164 @@
+body {
+    background-image: url('bg.jpg');
+    font-family: Roboto, arial;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    color: #eeeeee;
+}
+
+li {
+    list-style-type: none;
+}
+
+table {
+    margin: 10px auto;
+}
+
+.link {
+    color: #cccccc;
+    cursor: pointer;
+}
+
+.link:hover {
+    color: #eeeeee;
+}
+
+.info {
+    position: absolute;
+    display: none;
+    background-color: #000000;
+    border: 1px solid;
+    border-color: #555555;
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.button {
+    display: block;
+    margin: 6 auto;
+    border: 0;
+    border-radius: 6px;
+    font-size: 16px;
+    padding: 3px;
+    color: #eeeeee;
+    text-align: center;
+    max-width: 150px;
+    cursor: pointer;
+}
+
+.blue {
+    background-color: #2079DF;
+    width: 50%;
+}
+
+.blue:hover {
+    background-color: #4099FF;
+}
+
+.cancel {
+    background-color: #B90505;
+    width: 40%;
+}
+
+.cancel:hover {
+    background-color: #D92525;
+}
+
+#header {
+    height: 60px;
+    margin: 20px;
+}
+
+    #name {
+        font-size: 40px;
+        float: left;
+    }
+
+    #personal {
+        font-size: 24px;
+        font-weight: 600;
+        text-align: right;
+        padding-top: 5px;
+    }
+
+#content {
+    margin: 20px;
+}
+
+    #rooms {
+        width: 25%;
+        height: 80%;
+        background-color: rgba(0,0,0,0.3);
+        text-align: center;
+        float: left;
+    }
+
+        #roomheader {
+            color: #ffffff;
+            background-color: #AE113E;
+            font-size: 1.4em;
+            padding: 4px 4px 6px 6px;
+            font-weight: 400;
+        }
+
+        #roomlist {
+            list-style-type: none;
+            padding: 15px;
+            margin: 0;
+        }
+
+        #roomlist li {
+            font-size: 20px;
+            position: relative;
+            border: 1px solid;
+            border-color: #555555;
+            border-radius: 3px;
+            padding: 3px;
+        }
+
+    #popup {
+        position: fixed;
+        top: 30%;
+        left: 50%;
+        width: 300px;
+        margin-left: -150px;
+        opacity: 0.9;
+        text-align: center;
+        padding: 20px;
+    }
+
+    #main {
+        margin-left: 26%;
+        min-width: 60%;
+        height: 80%;
+        display: none;
+        background-color: rgba(0,0,0,0.3);
+        text-align: center;
+    }
+
+        #mainheader {
+            color: #ffffff;
+            background-color: #39DB4F;
+            font-size: 1.4em;
+            padding: 4px 4px 6px 6px;
+            font-weight: 400;
+        }
+
+        #gamenotification {
+            color: #EB9744;
+        }
+
+        #gameerror {
+            color: #D92525;
+        }
+
+        #gameregion {
+            width: 100%;
+            height: 80%;
+        }
+
+        #gamecontrol {
+            bottom: 20px;
+        }
+
