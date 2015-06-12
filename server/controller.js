@@ -1,3 +1,4 @@
+var Role = require('./game').Roles;
 var Game = require('./game').Game;
 
 // Game states
@@ -15,6 +16,7 @@ const DISCUSSION_TIME = 300000;
 const CHANGE_NAME = 'change name';
 const JOIN_ROOM = 'join room';
 const LEAVE_ROOM = 'leave room';
+const TOGGLE_ROLE = 'toggle role';
 const START_GAME = 'start game';
 const MAKE_REQUEST = 'make request';
 
@@ -47,6 +49,7 @@ function broadcastRoomStatus(roomID) {
             name: roomID,
             playerNames: playerNames,
             state: allRooms[roomID].state,
+            roleCounts: allRooms[roomID].roleCounts,
         });
     }
 }
@@ -60,6 +63,7 @@ function createRoom(roomID) {
     allRooms[roomID] = {
         players: [],
         state: AWAITING_PLAYERS,
+        roleCounts: {},
     };
     io.sockets.emit(ALL_ROOMS, getAllRooms());
 }
@@ -91,6 +95,24 @@ function leaveRoom(player) {
     }
 }
 
+function toggleRole(roomID, role) {
+    var roleCounts = allRooms[roomID].roleCounts;
+    var current = roleCounts[role] || 0;
+    if (role === Role.WEREWOLF) {
+        // 0, 1, 2, 3, 4
+        roleCounts[role] = (current + 1) % 5;
+    } else if (role === Role.VILLAGER) {
+        // 0, 1, 2
+        roleCounts[role] = (current + 1) % 3;
+    } else if (role === Role.MASON) {
+        // 0, 2, 3
+        roleCounts[role] = (current - (current > 0) + 2) % 4;
+    } else {
+        roleCounts[role] = 1 - current;
+    }
+    broadcastRoomStatus(roomID);
+}
+
 function performActions(game) {
     for (var i = 0; i < game.players.length; i++) {
         var card = {
@@ -110,9 +132,9 @@ function performActions(game) {
     }
 }
 
-function startGame(roomID, gameData) {
+function startGame(roomID) {
     var room = allRooms[roomID];
-    var game = Game(roomID.players, gameData.roleSet);
+    var game = Game(roomID.players, room.roleCounts);
     room.state = REQUEST_PHASE;
     room.game = game;
     broadcastRoomStatus(roomID);
@@ -190,6 +212,9 @@ exports.setServer = function(server) {
         });
         socket.on(LEAVE_ROOM, function(data) {
             leaveRoom(thisPlayer);
+        });
+        socket.on(TOGGLE_ROLE, function(role) {
+            toggleRole(thisPlayer.roomID, role);
         });
         socket.on(START_GAME, function(data) {
             startGame(thisPlayer.roomID, data);

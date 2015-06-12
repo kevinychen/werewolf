@@ -16,23 +16,52 @@
             </div>
         </div>
         <div id="content">
-            <div id="rooms">
-                <div id="roomheader">rooms</div>
-                <div id="roomcreate" class="blue button">new room</div>
-                <ul id="roomlist">
-                </ul>
-            </div>
-            <div id="main">
-                <div id="mainheader">
-                    <span id="roomname"></span>
-                </div>
-                <div id="roomleave" class="cancel button">leave room</div>
-                <div id="gamenotification"></div>
-                <div id="gameerror"></div>
-                <div id="gameregion">
-                </div>
-                <div id="gamecontrol" class="blue button">|</div>
-            </div>
+            <table>
+                <tr>
+                    <td id="rooms_td">
+                       <div id="rooms">
+                           <div id="roomheader">rooms</div>
+                           <div id="roomcreate" class="blue button">new room</div>
+                           <ul id="roomlist">
+                           </ul>
+                       </div>
+                    </td>
+                    <td id="main_td">
+                        <div id="main">
+                            <div id="mainheader">
+                                <span id="roomname"></span>
+                            </div>
+                            <div id="roomleave" class="cancel button">leave room</div>
+                            <div id="gamenotification"></div>
+                            <div id="gameerror"></div>
+                            <div id="gameregion">
+                                <!-- content specific to game -->
+                                <div id="roleselect">
+                                    <table>
+                                        <tr>
+                                            <td id="rs0"></td>
+                                            <td id="rs1"></td>
+                                            <td id="rs2"></td>
+                                            <td id="rs3"></td>
+                                        </tr>
+                                        <tr>
+                                            <td id="rs4"></td>
+                                            <td id="rs5"></td>
+                                            <td id="rs6"></td>
+                                            <td id="rs7"></td>
+                                        </tr>
+                                    </table>
+                                    <div id="currentplayers">
+                                    </div>
+                                </div>
+                                <!-- end content specific to game -->
+                            </div>
+                            <div id="gamecontrol" class="blue button">|</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
         <div id="popup" class="info">
             <table>

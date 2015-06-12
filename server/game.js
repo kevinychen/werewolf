@@ -10,7 +10,7 @@ const Roles = {
     TROUBLEMAKER: "troublemaker",
 };
 
-function Game(players, roleSet) {
+function Game(players, roleCounts) {
     if (players.length <= 1) {
         throw Exception("invalid number of players");
     }
@@ -19,13 +19,17 @@ function Game(players, roleSet) {
     }
 
     this.players = players;
-    this.roleSet = roleSet.slice(0);
 
     this.setRoles();
 }
 
 Game.prototype.setRoles = function() {
-    var roleSet = this.roleSet.slice(0);
+    var roleSet = [];
+    for (var role in this.roleCounts) {
+        for (var i = 0; i < this.roleCounts[role]; i++) {
+            roleSet.push(role);
+        }
+    }
 
     this.roles = {};
     this.initialRoleList = {};
@@ -140,4 +144,5 @@ Game.prototype.discussionPhase = function() {
 Game.prototype.getResults = function() {
 };
 
+exports.Roles = Roles;
 exports.Game = Game;

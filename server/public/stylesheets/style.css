@@ -86,79 +86,113 @@ table {
     margin: 20px;
 }
 
-    #rooms {
-        width: 25%;
-        height: 80%;
-        background-color: rgba(0,0,0,0.3);
-        text-align: center;
-        float: left;
+#content > table {
+    width: 100%;
+    min-height: 80%;
+}
+
+#rooms_td, #main_td {
+    vertical-align: top;
+    padding: 6px;
+    background-color: rgba(0,0,0,0.3);
+}
+
+#rooms_td {
+    width: 25%;
+}
+
+#rooms {
+    text-align: center;
+}
+
+    #roomheader {
+        color: #ffffff;
+        background-color: #AE113E;
+        font-size: 1.4em;
+        padding: 4px 4px 6px 6px;
+        font-weight: 400;
     }
 
-        #roomheader {
-            color: #ffffff;
-            background-color: #AE113E;
-            font-size: 1.4em;
-            padding: 4px 4px 6px 6px;
-            font-weight: 400;
-        }
-
-        #roomlist {
-            list-style-type: none;
-            padding: 15px;
-            margin: 0;
-        }
-
-        #roomlist li {
-            font-size: 20px;
-            position: relative;
-            border: 1px solid;
-            border-color: #555555;
-            border-radius: 3px;
-            padding: 3px;
-        }
-
-    #popup {
-        position: fixed;
-        top: 30%;
-        left: 50%;
-        width: 300px;
-        margin-left: -150px;
-        opacity: 0.9;
-        text-align: center;
-        padding: 20px;
+    #roomlist {
+        list-style-type: none;
+        padding: 15px;
+        margin: 0;
     }
 
-    #main {
-        margin-left: 26%;
-        min-width: 60%;
-        height: 80%;
-        display: none;
-        background-color: rgba(0,0,0,0.3);
-        text-align: center;
+    #roomlist li {
+        font-size: 20px;
+        position: relative;
+        border: 1px solid;
+        border-color: #555555;
+        border-radius: 3px;
+        padding: 3px;
     }
 
-        #mainheader {
-            color: #ffffff;
-            background-color: #39DB4F;
-            font-size: 1.4em;
-            padding: 4px 4px 6px 6px;
-            font-weight: 400;
-        }
+#popup {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    width: 300px;
+    margin-left: -150px;
+    opacity: 0.9;
+    text-align: center;
+    padding: 20px;
+}
 
-        #gamenotification {
-            color: #EB9744;
-        }
+#main_td {
+    width: 60%;
+}
 
-        #gameerror {
-            color: #D92525;
-        }
+#main {
+    display: none;
+    text-align: center;
+}
 
-        #gameregion {
-            width: 100%;
-            height: 80%;
-        }
+    #mainheader {
+        color: #ffffff;
+        background-color: #39DB4F;
+        font-size: 1.4em;
+        padding: 4px 4px 6px 6px;
+        font-weight: 400;
+    }
 
-        #gamecontrol {
-            bottom: 20px;
-        }
+    #gamenotification {
+        color: #EB9744;
+    }
 
+    #gameerror {
+        color: #D92525;
+    }
+
+    #gameregion {
+        width: 100%;
+        margin: 20px auto;
+    }
+
+#roleselect table {
+    width: 60%;
+    border-spacing: 8px;
+}
+
+#roleselect td {
+    width: 25%;
+    padding: 16px;
+    position: relative;
+}
+
+#roleselect .rolechosen {
+    border: 2px yellow solid;
+    border-radius: 5px;
+}
+
+#roleselect .freq {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    font-size: 22px;
+    margin: 3px;
+}
+
+#roleselect img {
+    width: 100%;
+}
