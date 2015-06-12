@@ -1,5 +1,5 @@
 
-const Roles = {
+const Role = {
     WEREWOLF: "werewolf",
     SEER: "seer",
     VILLAGER: "villager",
@@ -11,16 +11,11 @@ const Roles = {
 };
 
 function Game(players, roleCounts) {
-    if (players.length <= 1) {
-        throw Exception("invalid number of players");
+    if (players.length < 1) {
+        throw "invalid number of players";
     }
-    if (roleSet.length != players.length + 3) {
-        throw Exception("invalid number of roles");
-    }
-
     this.players = players;
-
-    this.setRoles();
+    this.roleCounts = roleCounts;
 }
 
 Game.prototype.setRoles = function() {
@@ -30,11 +25,14 @@ Game.prototype.setRoles = function() {
             roleSet.push(role);
         }
     }
+    if (roleSet.length !== this.players.length + 3) {
+        throw "invalid number of roles";
+    }
 
     this.roles = {};
     this.initialRoleList = {};
-    for (var role in roles) {
-        this.initialRoleList[role] = [];
+    for (var key in Role) {
+        this.initialRoleList[Role[key]] = [];
     }
 
     for (var i = 0; i < this.players.length; i++) {
@@ -111,7 +109,9 @@ Game.prototype.actionPhase = function(requests) {
 
     // Minion
     var minion = this.initialRoleList[Role.MINION][0];
-    this.informTarget(minion, werewolves);
+    if (minion) {
+        this.informTarget(minion, werewolves);
+    }
 
     // Mason
     var masons = this.initialRoleList[Role.MASON];
@@ -121,19 +121,25 @@ Game.prototype.actionPhase = function(requests) {
 
     // Seer
     var seer = this.initialRoleList[Role.SEER][0];
-    var seerChoice = requests[seer];
-    this.informTarget(seer, seerChoice);
+    if (seer) {
+        var seerChoice = requests[seer];
+        this.informTarget(seer, seerChoice);
+    }
 
     // Robber
     var robber = this.initialRoleList[Role.ROBBER][0];
-    var robberChoice = requests[robber];
-    this.informTarget(robber, robberChoice);
-    this.swapCards(robber, robberChoice[0]);
+    if (robber) {
+        var robberChoice = requests[robber];
+        this.informTarget(robber, robberChoice);
+        this.swapCards(robber, robberChoice[0]);
+    }
 
     // Troublemaker
     var troublemaker = this.initialRoleList[Role.TROUBLEMAKER][0];
-    var troublemakerChoice = requests[troublemaker];
-    this.swapCards(troublemakerChoice[0], troublemakerChoice[1]);
+    if (troublemaker) {
+        var troublemakerChoice = requests[troublemaker];
+        this.swapCards(troublemakerChoice[0], troublemakerChoice[1]);
+    }
 };
 
 Game.prototype.discussionPhase = function() {
@@ -144,5 +150,5 @@ Game.prototype.discussionPhase = function() {
 Game.prototype.getResults = function() {
 };
 
-exports.Roles = Roles;
+exports.Role = Role;
 exports.Game = Game;

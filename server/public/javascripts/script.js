@@ -5,6 +5,7 @@ const Roles = [
         "robber", "troublemaker", "tanner", "minion",
         ];
 var allRooms = [];
+var currentRoomStatus = {};
 
 socket.on('player info', function(playerName) {
     $('#username').text(playerName);
@@ -31,13 +32,16 @@ socket.on('room status', function(roomStatus) {
         $('#roomname').text(roomStatus.name);
 
         if (roomStatus.state === 'awaiting players') {
+            var numPlayers = roomStatus.playerNames.length;
             var numRolesSelected = 0;
             for (var role in roomStatus.roleCounts) {
                 numRolesSelected += roomStatus.roleCounts[role];
             }
+            roomStatus.numPlayers = numPlayers;
+            roomStatus.numRolesSelected = numRolesSelected;
 
             $('#gamenotification').text(
-                'Choose ' + (roomStatus.playerNames.length + 3) + ' roles. ' + numRolesSelected + ' roles selected.');
+                'Choose ' + (numPlayers + 3) + ' roles. ' + numRolesSelected + ' roles selected.');
 
             for (var i = 0; i < Roles.length; i++) {
                 var count = roomStatus.roleCounts[Roles[i]] || 0;
@@ -53,12 +57,13 @@ socket.on('room status', function(roomStatus) {
             }
 
             $('#currentplayers').text(
-                'Current players: ' + roomStatus.playerNames.join(', '));
+                numPlayers + ' current players: ' + roomStatus.playerNames.join(', '));
             $('#gamecontrol').text('START GAME');
         }
     } else {
         $('#main').hide();
     }
+    currentRoomStatus = roomStatus;
 });
 
 $(document).ready(function() {
@@ -81,6 +86,15 @@ $(document).ready(function() {
 
     $('#roomleave').on('click', function() {
         socket.emit('leave room', false);
+    });
+
+    $('#gamecontrol').on('click', function() {
+        if (currentRoomStatus.state === 'awaiting players') {
+            // New game
+            if (currentRoomStatus.numRolesSelected === currentRoomStatus.numPlayers + 3) {
+                socket.emit('start game', true);
+            }
+        }
     });
 
     for (var i = 0; i < Roles.length; i++) {

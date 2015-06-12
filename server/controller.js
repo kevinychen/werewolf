@@ -1,4 +1,4 @@
-var Role = require('./game').Roles;
+var Role = require('./game').Role;
 var Game = require('./game').Game;
 
 // Game states
@@ -134,7 +134,8 @@ function performActions(game) {
 
 function startGame(roomID) {
     var room = allRooms[roomID];
-    var game = Game(roomID.players, room.roleCounts);
+    var game = new Game(room.players, room.roleCounts);
+    game.setRoles();
     room.state = REQUEST_PHASE;
     room.game = game;
     broadcastRoomStatus(roomID);
@@ -198,7 +199,7 @@ exports.setServer = function(server) {
 
     io.sockets.on('connection', function(socket) {
         var thisPlayer = {
-            name: 'Guest ' + socket.id,
+            name: ('Guest ' + socket.id).substring(0, 12),
             socket: socket,
         };
         socket.emit(PLAYER_INFO, thisPlayer.name);
@@ -217,10 +218,16 @@ exports.setServer = function(server) {
             toggleRole(thisPlayer.roomID, role);
         });
         socket.on(START_GAME, function(data) {
-            startGame(thisPlayer.roomID, data);
+            startGame(thisPlayer.roomID);
         });
         socket.on(MAKE_REQUEST, function(data) {
             makeRequest(thisPlayer, data);
+        });
+        socket.on('disconnect', function() {
+            leaveRoom(thisPlayer);
+        });
+        socket.on('error', function(err) {
+            console.error(err);
         });
     });
 }
