@@ -30,15 +30,18 @@ socket.on('room status', function(roomStatus) {
     if (roomStatus) {
         $('#main').show();
         $('#roomname').text(roomStatus.name);
+        $('#roleselect').hide();
+        $('#playercircle').hide();
+
+        var numPlayers = roomStatus.playerNames.length;
+        var numRolesSelected = 0;
+        for (var role in roomStatus.roleCounts) {
+            numRolesSelected += roomStatus.roleCounts[role];
+        }
+        roomStatus.numPlayers = numPlayers;
+        roomStatus.numRolesSelected = numRolesSelected;
 
         if (roomStatus.state === 'awaiting players') {
-            var numPlayers = roomStatus.playerNames.length;
-            var numRolesSelected = 0;
-            for (var role in roomStatus.roleCounts) {
-                numRolesSelected += roomStatus.roleCounts[role];
-            }
-            roomStatus.numPlayers = numPlayers;
-            roomStatus.numRolesSelected = numRolesSelected;
 
             $('#gamenotification').text(
                 'Choose ' + (numPlayers + 3) + ' roles. ' + numRolesSelected + ' roles selected.');
@@ -59,6 +62,20 @@ socket.on('room status', function(roomStatus) {
             $('#currentplayers').text(
                 numPlayers + ' current players: ' + roomStatus.playerNames.join(', '));
             $('#gamecontrol').text('START GAME');
+            $('#roleselect').show();
+        } else {
+            $('#gamenotification').text('Nighttime.');
+
+            for (var i = 0; i < 12; i++) {
+                var selector = $('#pr' + i);
+                if (i < currentRoomStatus.numPlayers) {
+                    selector.show();
+                } else {
+                    selector.hide();
+                }
+            }
+            $('#gamecontrol').text('SELECT');
+            $('#playercircle').show();
         }
     } else {
         $('#main').hide();
@@ -107,5 +124,18 @@ $(document).ready(function() {
                 socket.emit('toggle role', Roles[index]);
             });
         })(i);
+    }
+
+    for (var i = 0; i < 12; i++) {
+        var selector = $('#pr' + i);
+        selector.append($('<img>').attr('src',
+                    '/images/back.jpg'));
+    }
+    $('#pr0').append($('<span>').addClass('freq').text('ME'));
+
+    for (var i = 0; i < 3; i++) {
+        var selector = $('#prc' + i);
+        selector.append($('<img>').attr('src',
+                    '/images/back.jpg'));
     }
 });

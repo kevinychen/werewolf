@@ -169,23 +169,40 @@ table {
         margin: 20px auto;
     }
 
-#roleselect table {
-    width: 60%;
+#roleselect > div {
+    width: 80%;
     border-spacing: 8px;
+    margin: 0 auto;
 }
 
-#roleselect td {
-    width: 25%;
+#roleselect > div > span {
+    width: 15%;
     padding: 16px;
+    margin: 6px;
     position: relative;
+    display: inline-block;
 }
 
-#roleselect .rolechosen {
+#playercircle > div {
+    width: 90%;
+    border-spacing: 8px;
+    margin: 0 auto;
+}
+
+#playercircle > div > span {
+    width: 10%;
+    padding: 16px;
+    margin: 6px;
+    position: relative;
+    display: inline-block;
+}
+
+#gameregion .rolechosen {
     border: 2px yellow solid;
     border-radius: 5px;
 }
 
-#roleselect .freq {
+#gameregion .freq {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -193,6 +210,6 @@ table {
     margin: 3px;
 }
 
-#roleselect img {
+#gameregion img {
     width: 100%;
 }

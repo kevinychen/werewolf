@@ -204,6 +204,7 @@ exports.setServer = function(server) {
         };
         socket.emit(PLAYER_INFO, thisPlayer.name);
         socket.emit(ALL_ROOMS, getAllRooms());
+        socket.emit(ROOM_STATUS, false);
         socket.on(CHANGE_NAME, function(name) {
             changeName(thisPlayer, name);
             socket.emit(PLAYER_INFO, thisPlayer);
