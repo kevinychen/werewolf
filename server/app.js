@@ -1,11 +1,10 @@
 var express = require('express');
 var http = require('http');
-var authConfig = require('./authConfig');
 var controller = require('./controller');
 
 var app = express();
 
-app.set('port', authConfig.port);
+app.set('port', 8405);
 
 app.use(express.cookieParser());
 app.use(express.logger('dev'));
