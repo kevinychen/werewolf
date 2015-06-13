@@ -146,6 +146,7 @@ table {
 #main {
     display: none;
     text-align: center;
+    min-width: 700px;
 }
 
     #mainheader {

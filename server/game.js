@@ -36,10 +36,7 @@ Game.prototype.setRoles = function() {
     }
 
     for (var i = 0; i < this.players.length; i++) {
-        var card = {
-            type: 'PLAYER',
-            playerID: this.players[i].id,
-        };
+        var card = 'PLAYER ' + this.players[i].playerID;
         var index = Math.floor(Math.random() * roleSet.length);
         var role = roleSet.splice(index, 1);
         this.roles[card] = role;
@@ -47,10 +44,7 @@ Game.prototype.setRoles = function() {
     }
 
     for (var i = 0; i < roleSet.length; i++) {
-        var card = {
-            type: 'CENTER',
-            index: i,
-        };
+        var card = 'CENTER ' + i;
         this.roles[card] = roleSet[i];
     }
 };
@@ -63,6 +57,7 @@ Game.prototype.informTarget = function(targetCard, cards) {
         this.inform[targetCard].push({
             card: cards[i],
             role: this.roles[cards[i]],
+            temporary: true,
         });
     }
 }
@@ -76,6 +71,11 @@ Game.prototype.swapCards = function(card1, card2) {
 Game.prototype.requestPhase = function() {
     this.inform = {};
     this.requests = {};
+
+    for (var i = 0; i < this.players.length; i++) {
+        var card = 'PLAYER ' + this.players[i].playerID;
+        this.informTarget(card, [card]);
+    }
 
     // Seer
     var seer = this.initialRoleList[Role.SEER][0];

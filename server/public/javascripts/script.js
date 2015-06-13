@@ -4,12 +4,14 @@ const Roles = [
         "werewolf", "villager", "mason", "seer",
         "robber", "troublemaker", "tanner", "minion",
         ];
+var me = {};
 var allRooms = [];
 var currentRoomStatus = {};
 
-socket.on('player info', function(playerName) {
-    $('#username').text(playerName);
-    $('#changedname').val(playerName);
+socket.on('player info', function(player) {
+    me = player;
+    $('#username').text(player.name);
+    $('#changedname').val(player.name);
 });
 
 socket.on('all rooms', function(rooms) {
@@ -34,13 +36,30 @@ socket.on('room status', function(roomStatus) {
         $('#roleselect').hide();
         $('#playercircle').hide();
 
-        var numPlayers = roomStatus.playerNames.length;
+        var numPlayers = roomStatus.players.length;
         var numRolesSelected = 0;
+        var myIndex = -1;
+        var cardsMap = {};
         for (var role in roomStatus.roleCounts) {
             numRolesSelected += roomStatus.roleCounts[role];
         }
+        for (var i = 0; i < numPlayers; i++) {
+            if (roomStatus.players[i].playerID === me.playerID) {
+                myIndex = i;
+            }
+        }
+        for (var i = 0; i < numPlayers; i++) {
+            var card = 'PLAYER ' +
+                roomStatus.players[(myIndex + i) % numPlayers].playerID;
+            cardsMap[card] = '#pr' + i;
+        }
+        for (var i = 0; i < 3; i++) {
+            var card = 'CENTER ' + i;
+            cardsMap[card] = '#prc' + i;
+        }
         roomStatus.numPlayers = numPlayers;
         roomStatus.numRolesSelected = numRolesSelected;
+        roomStatus.cardsMap = cardsMap;
 
         if (roomStatus.state === 'awaiting players') {
 
@@ -60,8 +79,12 @@ socket.on('room status', function(roomStatus) {
                 }
             }
 
+            var playerNames = [];
+            for (var i = 0; i < numPlayers; i++) {
+                playerNames.push(roomStatus.players[i].name);
+            }
             $('#currentplayers').text(
-                numPlayers + ' current players: ' + roomStatus.playerNames.join(', '));
+                numPlayers + ' current players: ' + playerNames.join(', '));
             $('#gamecontrol').text('START GAME');
             $('#roleselect').show();
         } else {
@@ -82,6 +105,20 @@ socket.on('room status', function(roomStatus) {
         $('#main').hide();
     }
     currentRoomStatus = roomStatus;
+});
+
+socket.on('inform', function(info) {
+    for (var i = 0; i < info.length; i++) {
+        var selector = $(currentRoomStatus.cardsMap[info[i].card]);
+        selector.find('img').attr('src',
+            '/images/' + info[i].role + '.jpg');
+        if (info[i].temporary) {
+            setTimeout(function() {
+                selector.find('img').attr('src',
+                    '/images/back.jpg');
+            }, 5000);
+        }
+    }
 });
 
 $(document).ready(function() {

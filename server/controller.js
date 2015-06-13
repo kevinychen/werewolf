@@ -41,13 +41,16 @@ function getAllRooms() {
 function broadcastRoomStatus(roomID) {
     if (roomID) {
         var room = allRooms[roomID];
-        var playerNames = [];
+        var players = [];
         for (var i = 0; i < room.players.length; i++) {
-            playerNames.push(room.players[i].name);
+            players.push({
+                playerID: room.players[i].playerID,
+                name: room.players[i].name,
+            });
         }
         io.to(roomID).emit(ROOM_STATUS, {
             name: roomID,
-            playerNames: playerNames,
+            players: players,
             state: allRooms[roomID].state,
             roleCounts: allRooms[roomID].roleCounts,
         });
@@ -57,6 +60,11 @@ function broadcastRoomStatus(roomID) {
 function changeName(player, name) {
     player.name = name;
     broadcastRoomStatus(player.roomID);
+
+    player.socket.emit(PLAYER_INFO, {
+        playerID: player.playerID,
+        name: player.name,
+    });
 }
 
 function createRoom(roomID) {
@@ -115,10 +123,7 @@ function toggleRole(roomID, role) {
 
 function performActions(game) {
     for (var i = 0; i < game.players.length; i++) {
-        var card = {
-            type: 'PLAYER',
-            playerID: game.players[i].id,
-        };
+        var card = 'PLAYER ' + game.players[i].playerID;
 
         var inform = game.inform[card];
         if (inform) {
@@ -134,6 +139,9 @@ function performActions(game) {
 
 function startGame(roomID) {
     var room = allRooms[roomID];
+    if (room.state !== AWAITING_PLAYERS) {
+        return;
+    }
     var game = new Game(room.players, room.roleCounts);
     game.setRoles();
     room.state = REQUEST_PHASE;
@@ -150,6 +158,9 @@ function startGame(roomID) {
 
 function startActionPhase(roomID) {
     var room = allRooms[roomID];
+    if (room.state !== REQUEST_PHASE) {
+        return;
+    }
     var game = room.game;
     room.state = ACTION_PHASE;
     broadcastRoomStatus(roomID);
@@ -164,6 +175,9 @@ function startActionPhase(roomID) {
 
 function startDiscussionPhase(roomID) {
     var room = allRooms[roomID];
+    if (room.state !== ACTION_PHASE) {
+        return;
+    }
     var game = room.game;
     room.state = DISCUSSION_PHASE;
     broadcastRoomStatus(roomID);
@@ -178,6 +192,9 @@ function startDiscussionPhase(roomID) {
 
 function setEndPhase(roomID) {
     var room = allRooms[roomID];
+    if (room.state !== DISCUSSION_PHASE) {
+        return;
+    }
     room.state = AWAITING_PLAYERS;
 
     var results = game.getResults();
@@ -187,10 +204,7 @@ function setEndPhase(roomID) {
 }
 
 function makeRequest(player, request) {
-    var card = {
-        type: 'PLAYER',
-        playerID: player.id,
-    };
+    var card = 'PLAYER ' + player.playerID;
     allRooms[player.roomID].requests[card] = request;
 }
 
@@ -199,15 +213,14 @@ exports.setServer = function(server) {
 
     io.sockets.on('connection', function(socket) {
         var thisPlayer = {
-            name: ('Guest ' + socket.id).substring(0, 12),
+            playerID: socket.id,
             socket: socket,
         };
-        socket.emit(PLAYER_INFO, thisPlayer.name);
+        changeName(thisPlayer, ('Guest ' + socket.id).substring(0, 12));
         socket.emit(ALL_ROOMS, getAllRooms());
         socket.emit(ROOM_STATUS, false);
         socket.on(CHANGE_NAME, function(name) {
             changeName(thisPlayer, name);
-            socket.emit(PLAYER_INFO, thisPlayer.name);
         });
         socket.on(JOIN_ROOM, function(roomID) {
             joinRoom(thisPlayer, roomID);
