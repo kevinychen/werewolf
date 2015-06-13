@@ -12,7 +12,7 @@
                 <div id="logo">One Night Ultimate Werewolf</div>
             </div>
             <div id="personal">
-                Welcome, <span id="username">Guest</span>!
+                Welcome, <span id="username" class="link">Guest</span>!
             </div>
         </div>
         <div id="content">
@@ -84,7 +84,17 @@
                 </tr>
             </table>
         </div>
-        <div id="popup" class="info">
+        <div id="changenamepopup" class="info">
+            <table>
+                <tr>
+                    <td>Name:</td>
+                    <td><input id="changedname" type="text"/></td>
+                </tr>
+            </table>
+            <input id="changename" class="blue button" type="submit" value="Change" />
+            <input id="closename" class="cancel button" type="submit" value="Close" />
+        </div>
+        <div id="createroompopup" class="info">
             <table>
                 <tr>
                     <td>Room name:</td>

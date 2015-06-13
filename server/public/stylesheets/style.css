@@ -128,7 +128,7 @@ table {
         padding: 3px;
     }
 
-#popup {
+#createroompopup, #changenamepopup {
     position: fixed;
     top: 30%;
     left: 50%;

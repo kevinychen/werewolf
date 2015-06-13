@@ -9,6 +9,7 @@ var currentRoomStatus = {};
 
 socket.on('player info', function(playerName) {
     $('#username').text(playerName);
+    $('#changedname').val(playerName);
 });
 
 socket.on('all rooms', function(rooms) {
@@ -84,20 +85,37 @@ socket.on('room status', function(roomStatus) {
 });
 
 $(document).ready(function() {
-    $('#roomcreate').on('click', function() {
-        $('#popup').show();
+    $('#username').on('click', function() {
+        $('#changenamepopup').show();
         $('#content').css('opacity', '0.5');
-        $('#createroomname').focus();
+        $('#changedname').select();
+    });
+
+    $('#changename').on('click', function() {
+        socket.emit('change name', $('#changedname').val());
+        $('#changenamepopup').hide();
+        $('#content').css('opacity', '1');
+    });
+
+    $('#closename').on('click', function() {
+        $('#changenamepopup').hide();
+        $('#content').css('opacity', '1');
+    });
+
+    $('#roomcreate').on('click', function() {
+        $('#createroompopup').show();
+        $('#content').css('opacity', '0.5');
+        $('#createroomname').select();
     });
 
     $('#createroom').on('click', function() {
         socket.emit('join room', $('#createroomname').val());
-        $('#popup').hide();
+        $('#createroompopup').hide();
         $('#content').css('opacity', '1');
     });
 
     $('#closecreate').on('click', function() {
-        $('#popup').hide();
+        $('#createroompopup').hide();
         $('#content').css('opacity', '1');
     });
 

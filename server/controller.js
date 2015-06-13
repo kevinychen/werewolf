@@ -207,7 +207,7 @@ exports.setServer = function(server) {
         socket.emit(ROOM_STATUS, false);
         socket.on(CHANGE_NAME, function(name) {
             changeName(thisPlayer, name);
-            socket.emit(PLAYER_INFO, thisPlayer);
+            socket.emit(PLAYER_INFO, thisPlayer.name);
         });
         socket.on(JOIN_ROOM, function(roomID) {
             joinRoom(thisPlayer, roomID);
