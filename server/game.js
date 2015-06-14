@@ -38,7 +38,7 @@ Game.prototype.setRoles = function() {
     for (var i = 0; i < this.players.length; i++) {
         var card = 'PLAYER ' + this.players[i].playerID;
         var index = Math.floor(Math.random() * roleSet.length);
-        var role = roleSet.splice(index, 1);
+        var role = roleSet.splice(index, 1)[0];
         this.roles[card] = role;
         this.initialRoleList[role].push(card);
     }
@@ -57,7 +57,6 @@ Game.prototype.informTarget = function(targetCard, cards) {
         this.inform[targetCard].push({
             card: cards[i],
             role: this.roles[cards[i]],
-            temporary: true,
         });
     }
 }
@@ -177,7 +176,77 @@ Game.prototype.discussionPhase = function() {
     this.requests = {};
 };
 
-Game.prototype.getResults = function() {
+Game.prototype.getResults = function(requests) {
+    var votesMap = {};
+    for (var playerCard in requests) {
+        var vote = requests[playerCard];
+        if (!votesMap[vote]) {
+            votesMap[vote] = 0;
+        }
+        votesMap[vote]++;
+    }
+    var maxNumVotes = 0;
+    for (var vote in votesMap) {
+        if (votesMap[vote] > maxNumVotes) {
+            maxNumVotes = votesMap[vote];
+        }
+    }
+    var killed = [];
+    for (var vote in votesMap) {
+        if (votesMap[vote] == maxNumVotes) {
+            killed.push(vote);
+        }
+    }
+
+    var tanner = undefined;
+    var allWerewolves = [];
+    var allBad = [];
+    var allGood = [];
+    for (var i = 0; i < this.players.length; i++) {
+        var card = 'PLAYER ' + this.players[i].playerID;
+        if (this.roles[card] === Role.TANNER) {
+            tanner = card;
+        } else if (this.roles[card] === Role.WEREWOLF) {
+            allWerewolves.push(card);
+        }
+        if (this.roles[card] === Role.WEREWOLF ||
+                this.roles[card] === Role.MINION) {
+            allBad.push(card);
+        } else if (this.roles[card] !== Role.TANNER) {
+            allGood.push(card);
+        }
+    }
+
+    var tannerKilled = false;
+    var werewolfKilled = false;
+    var anyoneKilled = false;
+    for (var i = 0; i < killed.length; i++) {
+        if (killed[i]) {
+            anyoneKilled = true;
+        }
+        if (this.roles[killed[i]] === Role.TANNER) {
+            tannerKilled = true;
+        } else if (this.roles[killed[i]] === Role.WEREWOLF) {
+            werewolfKilled = true;
+        }
+    }
+
+    var winners;
+    if (tanner && tannerKilled) {
+        winners = [tanner];
+    } else if (allWerewolves && werewolfKilled ||
+            !allWerewolves && !anyoneKilled) {
+        winners = allGood;
+    } else {
+        winners = allBad;
+    }
+
+    var results = {
+        allRoles: this.roles,
+        killed: killed,
+        winners: winners,
+    };
+    return results;
 };
 
 exports.Role = Role;

@@ -6,6 +6,7 @@ const AWAITING_PLAYERS = 'awaiting players';
 const REQUEST_PHASE = 'request phase';
 const ACTION_PHASE = 'action phase';
 const DISCUSSION_PHASE = 'discussion phase';
+const END_PHASE = 'end phase';
 
 // Game constants
 const PHASE1TIME = 10000;
@@ -19,6 +20,7 @@ const LEAVE_ROOM = 'leave room';
 const TOGGLE_ROLE = 'toggle role';
 const START_GAME = 'start game';
 const TOGGLE_REQUEST = 'toggle request';
+const NEXT_ROUND = 'next round';
 
 // Server socket.io messages to client
 const PLAYER_INFO = 'player info';
@@ -200,14 +202,21 @@ function startDiscussionPhase(roomID) {
 
 function setEndPhase(roomID) {
     var room = allRooms[roomID];
+    var requests = room.requests;
     if (room.state !== DISCUSSION_PHASE) {
         return;
     }
-    room.state = AWAITING_PLAYERS;
+    room.state = END_PHASE;
+    room.time = 0;
+    broadcastRoomStatus(roomID);
 
-    var results = room.game.getResults();
+    var results = room.game.getResults(requests);
     io.to(roomID).emit(RESULTS, results);
+}
 
+function nextRound(roomID) {
+    var room = allRooms[roomID];
+    room.state = AWAITING_PLAYERS;
     broadcastRoomStatus(roomID);
 }
 
@@ -243,17 +252,20 @@ exports.setServer = function(server) {
         socket.on(JOIN_ROOM, function(roomID) {
             joinRoom(thisPlayer, roomID);
         });
-        socket.on(LEAVE_ROOM, function(data) {
+        socket.on(LEAVE_ROOM, function() {
             leaveRoom(thisPlayer);
         });
         socket.on(TOGGLE_ROLE, function(role) {
             toggleRole(thisPlayer.roomID, role);
         });
-        socket.on(START_GAME, function(data) {
+        socket.on(START_GAME, function() {
             startGame(thisPlayer.roomID);
         });
         socket.on(TOGGLE_REQUEST, function(card) {
             toggleRequest(thisPlayer, card);
+        });
+        socket.on(NEXT_ROUND, function() {
+            nextRound(thisPlayer.roomID);
         });
         socket.on('disconnect', function() {
             leaveRoom(thisPlayer);

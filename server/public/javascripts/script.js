@@ -4,6 +4,7 @@ const Roles = [
         "werewolf", "villager", "mason", "seer",
         "robber", "troublemaker", "tanner", "minion",
         ];
+const CARD_SHOW_TIME = 5000;
 var me = {};
 var roundEndTime = 0;
 var allRooms = [];
@@ -112,24 +113,37 @@ function refreshRoomStatus() {
         $('#currentplayers').text(
             currentRoomStatus.numPlayers + ' current players: '
             + playerNames.join(', '));
-        $('#gamecontrol').show();
         $('#gamecontrol').text('START GAME');
+        $('#gamecontrol').show();
         $('#roleselect').show();
     } else {
         for (var i = 0; i < 12; i++) {
             var selector = $('#pr' + i);
+            selector.find('img').attr('src',
+                    '/images/back.jpg');
+            selector.removeClass('killed');
             if (i < currentRoomStatus.numPlayers) {
                 selector.show();
             } else {
                 selector.hide();
             }
         }
+        for (var i = 0; i < 3; i++) {
+            var selector = $('#prc' + i);
+            selector.find('img').attr('src',
+                    '/images/back.jpg');
+        }
 
         roundEndTime = Date.now() + currentRoomStatus.time;
-        $('#gamecontrol').hide();
+        if (currentRoomStatus.state === 'end phase') {
+            $('#gamecontrol').text('NEXT ROUND');
+            $('#gamecontrol').show();
+        } else {
+            $('#gamecontrol').hide();
+        }
         $('#playercircle').show();
         if (currentRoomStatus.state === 'discussion phase') {
-            $('#gamenotification').text('Day time: discuss!');
+            $('#gamenotification').text('Day time: discuss and vote!');
         } else {
             $('#gamenotification').text('Night time.');
         }
@@ -141,18 +155,37 @@ socket.on('inform', function(info) {
         var selector = $(currentRoomStatus.cardsMap[info[i].card]);
         selector.find('img').attr('src',
             '/images/' + info[i].role + '.jpg');
-        if (info[i].temporary) {
-            (function(img) {
-                setTimeout(function() {
-                    img.attr('src', '/images/back.jpg');
-                }, 10000);
-            })(selector.find('img'));
-        }
+        (function(img) {
+            setTimeout(function() {
+                img.attr('src', '/images/back.jpg');
+            }, CARD_SHOW_TIME);
+        })(selector.find('img'));
     }
 });
 
 socket.on('request', function(request) {
     setRequest(request);
+});
+
+socket.on('results', function(results) {
+    for (var card in results.allRoles) {
+        var selector = $(currentRoomStatus.cardsMap[card]);
+        selector.find('img').attr('src',
+            '/images/' + results.allRoles[card] + '.jpg');
+    }
+
+    for (var i = 0; i < results.killed.length; i++) {
+        var victim = results.killed[i];
+        var selector = $(currentRoomStatus.cardsMap[victim]);
+        selector.addClass('killed');
+    }
+
+    var myCard = 'PLAYER ' + me.playerID;
+    if (results.winners.indexOf(myCard) !== -1) {
+        $('#gamenotification').text('You win!');
+    } else {
+        $('#gamenotification').text('You lose.');
+    }
 });
 
 function setRequest(request) {
@@ -209,6 +242,9 @@ $(document).ready(function() {
             if (currentRoomStatus.numRolesSelected === currentRoomStatus.numPlayers + 3) {
                 socket.emit('start game', true);
             }
+        } else if (currentRoomStatus.state === 'end phase') {
+            // Next round
+            socket.emit('next round', true);
         }
     });
 

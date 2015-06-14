@@ -203,6 +203,11 @@ table {
     border-radius: 5px;
 }
 
+#gameregion .killed {
+    border: 2px red solid;
+    border-radius: 5px;
+}
+
 #gameregion .freq {
     position: absolute;
     top: 0px;
