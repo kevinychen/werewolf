@@ -54,6 +54,7 @@ function broadcastRoomStatus(roomID) {
             players: players,
             state: allRooms[roomID].state,
             roleCounts: allRooms[roomID].roleCounts,
+            time: allRooms[roomID].time,
         });
         room.requests = {};
         io.to(roomID).emit(REQUEST_STATUS, []);
@@ -149,6 +150,7 @@ function startGame(roomID) {
     game.setRoles();
     room.state = REQUEST_PHASE;
     room.game = game;
+    room.time = PHASE1TIME;
     broadcastRoomStatus(roomID);
 
     game.requestPhase();
@@ -167,6 +169,7 @@ function startActionPhase(roomID) {
     var game = room.game;
     var requests = room.requests;
     room.state = ACTION_PHASE;
+    room.time = PHASE2TIME;
     broadcastRoomStatus(roomID);
 
     game.actionPhase(requests);
@@ -184,6 +187,7 @@ function startDiscussionPhase(roomID) {
     }
     var game = room.game;
     room.state = DISCUSSION_PHASE;
+    room.time = DISCUSSION_TIME;
     broadcastRoomStatus(roomID);
 
     game.discussionPhase();

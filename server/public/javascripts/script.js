@@ -5,6 +5,7 @@ const Roles = [
         "robber", "troublemaker", "tanner", "minion",
         ];
 var me = {};
+var roundEndTime = 0;
 var allRooms = [];
 var currentRoomStatus = {};
 
@@ -68,8 +69,8 @@ socket.on('room status', function(roomStatus) {
         $('#main').hide();
     }
     currentRoomStatus = roomStatus;
-    setRequest({});
     refreshRoomStatus();
+    setRequest({});
 });
 
 socket.on('request status', function(selectedCards) {
@@ -124,8 +125,14 @@ function refreshRoomStatus() {
             }
         }
 
+        roundEndTime = Date.now() + currentRoomStatus.time;
         $('#gamecontrol').hide();
         $('#playercircle').show();
+        if (currentRoomStatus.state === 'discussion phase') {
+            $('#gamenotification').text('Day time: discuss!');
+        } else {
+            $('#gamenotification').text('Night time.');
+        }
     }
 };
 
@@ -153,8 +160,6 @@ function setRequest(request) {
         $('#gamenotification').text(
             'Choose ' + request.playerCards + ' players' +
             (request.centerCards ? ' or ' + request.centerCards + ' center cards' : '') + '.');
-    } else {
-        $('#gamenotification').text('Nighttime');
     }
     currentRoomStatus.request = request;
 }
@@ -206,6 +211,20 @@ $(document).ready(function() {
             }
         }
     });
+
+    var timer = function() {
+        if (Date.now() > roundEndTime) {
+            $('#gametimer').text('0:00');
+        } else {
+            var numSeconds = parseInt(
+                    (roundEndTime - Date.now()) / 1000);
+            $('#gametimer').text(
+                    parseInt(numSeconds / 60) + ':' +
+                    ('0' + numSeconds % 60).substr(-2));
+        }
+        setTimeout(timer, 200);
+    }
+    timer();
 
     for (var i = 0; i < Roles.length; i++) {
         var selector = $('#rs' + i);
