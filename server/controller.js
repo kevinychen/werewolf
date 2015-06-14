@@ -8,7 +8,7 @@ const ACTION_PHASE = 'action phase';
 const DISCUSSION_PHASE = 'discussion phase';
 
 // Game constants
-const PHASE1TIME = 7000;
+const PHASE1TIME = 10000;
 const PHASE2TIME = 10000;
 const DISCUSSION_TIME = 300000;
 
@@ -18,12 +18,13 @@ const JOIN_ROOM = 'join room';
 const LEAVE_ROOM = 'leave room';
 const TOGGLE_ROLE = 'toggle role';
 const START_GAME = 'start game';
-const MAKE_REQUEST = 'make request';
+const TOGGLE_REQUEST = 'toggle request';
 
 // Server socket.io messages to client
 const PLAYER_INFO = 'player info';
 const ALL_ROOMS = 'all rooms';
 const ROOM_STATUS = 'room status';
+const REQUEST_STATUS = 'request status';
 const REQUEST = 'request';
 const INFORM = 'inform';
 const RESULTS = 'results';
@@ -54,6 +55,8 @@ function broadcastRoomStatus(roomID) {
             state: allRooms[roomID].state,
             roleCounts: allRooms[roomID].roleCounts,
         });
+        room.requests = {};
+        io.to(roomID).emit(REQUEST_STATUS, []);
     }
 }
 
@@ -162,10 +165,11 @@ function startActionPhase(roomID) {
         return;
     }
     var game = room.game;
+    var requests = room.requests;
     room.state = ACTION_PHASE;
     broadcastRoomStatus(roomID);
 
-    game.actionPhase(room.requests);
+    game.actionPhase(requests);
     performActions(game);
 
     setTimeout(function() {
@@ -197,15 +201,25 @@ function setEndPhase(roomID) {
     }
     room.state = AWAITING_PLAYERS;
 
-    var results = game.getResults();
+    var results = room.game.getResults();
     io.to(roomID).emit(RESULTS, results);
 
     broadcastRoomStatus(roomID);
 }
 
-function makeRequest(player, request) {
-    var card = 'PLAYER ' + player.playerID;
-    allRooms[player.roomID].requests[card] = request;
+function toggleRequest(player, card) {
+    var requests = allRooms[player.roomID].requests;
+    var playerCard = 'PLAYER ' + player.playerID;
+    if (!requests[playerCard]) {
+        requests[playerCard] = [];
+    }
+    var index = requests[playerCard].indexOf(card);
+    if (index === -1) {
+        requests[playerCard].push(card);
+    } else {
+        requests[playerCard].splice(index, 1);
+    }
+    player.socket.emit(REQUEST_STATUS, requests[playerCard]);
 }
 
 exports.setServer = function(server) {
@@ -234,8 +248,8 @@ exports.setServer = function(server) {
         socket.on(START_GAME, function(data) {
             startGame(thisPlayer.roomID);
         });
-        socket.on(MAKE_REQUEST, function(data) {
-            makeRequest(thisPlayer, data);
+        socket.on(TOGGLE_REQUEST, function(card) {
+            toggleRequest(thisPlayer, card);
         });
         socket.on('disconnect', function() {
             leaveRoom(thisPlayer);

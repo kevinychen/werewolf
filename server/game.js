@@ -68,6 +68,23 @@ Game.prototype.swapCards = function(card1, card2) {
     this.roles[card2] = temp;
 };
 
+Game.prototype.confirmChoice = function(card, choice, requests) {
+    var numPlayerCards = 0, numCenterCards = 0;
+    for (var i = 0; i < choice.length; i++) {
+        if (choice[i].substring(0, 6) === 'PLAYER') {
+            numPlayerCards++;
+        } else {
+            numCenterCards++;
+        }
+    }
+    return (
+            (numPlayerCards >= 1 &&
+             numPlayerCards <= requests[card].playerCards) ||
+            (numCenterCards >= 1 &&
+             numCenterCards <= requests[card].centerCards)
+           );
+};
+
 Game.prototype.requestPhase = function() {
     this.inform = {};
     this.requests = {};
@@ -79,25 +96,32 @@ Game.prototype.requestPhase = function() {
 
     // Seer
     var seer = this.initialRoleList[Role.SEER][0];
-    this.requests[seer] = {
-        playerCards: 1,
-        centerCards: 2,
-    };
+    if (seer) {
+        this.requests[seer] = {
+            playerCards: 1,
+            centerCards: 2,
+        };
+    }
 
     // Robber
     var robber = this.initialRoleList[Role.ROBBER][0];
-    this.requests[robber] = {
-        playerCards: 1,
-    };
+    if (robber) {
+        this.requests[robber] = {
+            playerCards: 1,
+        };
+    }
 
     // Troublemaker
     var troublemaker = this.initialRoleList[Role.TROUBLEMAKER][0];
-    this.requests[troublemaker] = {
-        playerCards: 2,
-    };
+    if (troublemaker) {
+        this.requests[troublemaker] = {
+            playerCards: 2,
+        };
+    }
 };
 
 Game.prototype.actionPhase = function(requests) {
+    var prevRequests = this.requests;
     this.inform = {};
     this.requests = {};
 
@@ -122,23 +146,29 @@ Game.prototype.actionPhase = function(requests) {
     // Seer
     var seer = this.initialRoleList[Role.SEER][0];
     if (seer) {
-        var seerChoice = requests[seer];
-        this.informTarget(seer, seerChoice);
+        var seerChoice = requests[seer] || [];
+        if (this.confirmChoice(seer, seerChoice, prevRequests)) {
+            this.informTarget(seer, seerChoice);
+        }
     }
 
     // Robber
     var robber = this.initialRoleList[Role.ROBBER][0];
     if (robber) {
-        var robberChoice = requests[robber];
-        this.informTarget(robber, robberChoice);
-        this.swapCards(robber, robberChoice[0]);
+        var robberChoice = requests[robber] || [];
+        if (this.confirmChoice(robber, robberChoice, prevRequests)) {
+            this.informTarget(robber, robberChoice);
+            this.swapCards(robber, robberChoice[0]);
+        }
     }
 
     // Troublemaker
     var troublemaker = this.initialRoleList[Role.TROUBLEMAKER][0];
     if (troublemaker) {
-        var troublemakerChoice = requests[troublemaker];
-        this.swapCards(troublemakerChoice[0], troublemakerChoice[1]);
+        var troublemakerChoice = requests[troublemaker] || [];
+        if (this.confirmChoice(troublemaker, troublemakerChoice, prevRequests)) {
+            this.swapCards(troublemakerChoice[0], troublemakerChoice[1]);
+        }
     }
 };
 
