@@ -89,6 +89,7 @@ socket.on('request status', function(selectedCards) {
 socket.on('receive chat', function(chat) {
     $('#chat').find('textarea').append(
         chat.name + ': ' + chat.message + '\n');
+    $('#chatarea').scrollTop($('#chatarea')[0].scrollHeight);
 });
 
 function refreshRoomStatus() {

@@ -140,7 +140,7 @@ table {
         font-weight: 400;
     }
 
-    #chat textarea {
+    #chatarea {
         width: 90%;
         height: 500px;
         margin: 12px auto;
