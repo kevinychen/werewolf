@@ -78,9 +78,11 @@ Game.prototype.confirmChoice = function(card, choice, requests) {
     }
     return (
             (numPlayerCards >= 1 &&
-             numPlayerCards <= requests[card].playerCards) ||
+             numPlayerCards <= requests[card].playerCards &&
+             numCenterCards === 0) ||
             (numCenterCards >= 1 &&
-             numCenterCards <= requests[card].centerCards)
+             numCenterCards <= requests[card].centerCards &&
+             numPlayerCards === 0)
            );
 };
 

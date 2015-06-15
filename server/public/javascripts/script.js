@@ -158,6 +158,8 @@ function refreshRoomStatus() {
 };
 
 socket.on('inform', function(info) {
+    console.log(info);
+    console.log(currentRoomStatus.cardsMap);
     for (var i = 0; i < info.length; i++) {
         var selector = $(currentRoomStatus.cardsMap[info[i].card]);
         selector.find('img').attr('src',
