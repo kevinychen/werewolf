@@ -34,6 +34,8 @@ socket.on('all rooms', function(rooms) {
 socket.on('room status', function(roomStatus) {
     if (roomStatus) {
         $('#main').show();
+        $('#rooms').hide();
+        $('#chat').show();
         $('#roomname').text(roomStatus.name);
         $('#roleselect').hide();
         $('#playercircle').hide();
@@ -68,6 +70,8 @@ socket.on('room status', function(roomStatus) {
         roomStatus.cardsMapInv = cardsMapInv;
     } else {
         $('#main').hide();
+        $('#rooms').show();
+        $('#chat').hide();
     }
     currentRoomStatus = roomStatus;
     refreshRoomStatus();
@@ -80,6 +84,11 @@ socket.on('request status', function(selectedCards) {
         var selector = $(currentRoomStatus.cardsMap[selectedCards[i]]);
         selector.addClass('rolechosen');
     }
+});
+
+socket.on('receive chat', function(chat) {
+    $('#chat').find('textarea').append(
+        chat.name + ': ' + chat.message + '\n');
 });
 
 function refreshRoomStatus() {
@@ -305,4 +314,11 @@ $(document).ready(function() {
             });
         })(i);
     }
+
+    $('#chatentry').keyup(function(event) {
+        if (event.which === 13) {
+            socket.emit('send chat', $('#chatentry').val());
+            $('#chatentry').val('');
+        }
+    });
 });

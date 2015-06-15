@@ -128,6 +128,26 @@ table {
         padding: 3px;
     }
 
+#chat {
+    text-align: center;
+}
+
+    #chatheader {
+        color: #ffffff;
+        background-color: #AE113E;
+        font-size: 1.4em;
+        padding: 4px 4px 6px 6px;
+        font-weight: 400;
+    }
+
+    #chat textarea {
+        width: 90%;
+        height: 500px;
+        margin: 12px auto;
+        background-color: #dddddd;
+        resize: none;
+    }
+
 #createroompopup, #changenamepopup {
     position: fixed;
     top: 30%;

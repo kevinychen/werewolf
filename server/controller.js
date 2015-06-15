@@ -21,6 +21,7 @@ const TOGGLE_ROLE = 'toggle role';
 const START_GAME = 'start game';
 const TOGGLE_REQUEST = 'toggle request';
 const NEXT_ROUND = 'next round';
+const SEND_CHAT = 'send chat';
 
 // Server socket.io messages to client
 const PLAYER_INFO = 'player info';
@@ -30,6 +31,7 @@ const REQUEST_STATUS = 'request status';
 const REQUEST = 'request';
 const INFORM = 'inform';
 const RESULTS = 'results';
+const RECEIVE_CHAT = 'receive chat';
 
 var allRooms = {};
 
@@ -237,6 +239,13 @@ function toggleRequest(player, card) {
     player.socket.emit(REQUEST_STATUS, requests[playerCard]);
 }
 
+function broadcastChat(roomID, player, message) {
+    io.to(roomID).emit(RECEIVE_CHAT, {
+        name: player.name,
+        message: message,
+    });
+}
+
 exports.setServer = function(server) {
     io = require('socket.io').listen(server);
 
@@ -268,6 +277,9 @@ exports.setServer = function(server) {
         });
         socket.on(NEXT_ROUND, function() {
             nextRound(thisPlayer.roomID);
+        });
+        socket.on(SEND_CHAT, function(message) {
+            broadcastChat(thisPlayer.roomID, thisPlayer, message);
         });
         socket.on('disconnect', function() {
             leaveRoom(thisPlayer);
