@@ -4,7 +4,7 @@ const Roles = [
         "werewolf", "villager", "mason", "seer",
         "robber", "troublemaker", "tanner", "minion",
         ];
-const CARD_SHOW_TIME = 5000;
+const CARD_SHOW_TIME = 10000;
 var me = {};
 var roundEndTime = 0;
 var allRooms = [];
@@ -132,6 +132,13 @@ function refreshRoomStatus() {
             var selector = $('#prc' + i);
             selector.find('img').attr('src',
                     '/images/back.jpg');
+        }
+
+        for (var i = 0; i < currentRoomStatus.players.length; i++) {
+            var player = currentRoomStatus.players[i];
+            var card = 'PLAYER ' + player.playerID;
+            var label = player.playerID === me.playerID ?  'me' : player.name;
+            $(currentRoomStatus.cardsMap[card]).find('span').text(label);
         }
 
         roundEndTime = Date.now() + currentRoomStatus.time;
@@ -278,6 +285,7 @@ $(document).ready(function() {
         var selector = $('#pr' + i);
         selector.append($('<img>').attr('src',
                     '/images/back.jpg'));
+        selector.append($('<span>').addClass('label'));
         (function(index) {
             selector.on('click', function() {
                 var card = currentRoomStatus.cardsMapInv['#pr' + index];
@@ -285,7 +293,6 @@ $(document).ready(function() {
             });
         })(i);
     }
-    $('#pr0').append($('<span>').addClass('freq').text('ME'));
 
     for (var i = 0; i < 3; i++) {
         var selector = $('#prc' + i);

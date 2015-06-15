@@ -216,6 +216,19 @@ table {
     margin: 3px;
 }
 
+#gameregion .label {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    font-size: 16px;
+    padding: 2px;
+    margin: 3px;
+    background-color: white;
+    color: black;
+    border: 1px black solid;
+    border-radius: 6px;
+}
+
 #gameregion img {
     width: 100%;
 }
