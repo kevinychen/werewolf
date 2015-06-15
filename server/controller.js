@@ -44,16 +44,18 @@ function getAllRooms() {
 function broadcastRoomStatus(roomID) {
     if (roomID) {
         var room = allRooms[roomID];
-        var players = [];
-        for (var i = 0; i < room.players.length; i++) {
-            players.push({
-                playerID: room.players[i].playerID,
-                name: room.players[i].name,
+        var players = room.state === AWAITING_PLAYERS ?
+            room.players : room.game.players;
+        var outputPlayers = [];
+        for (var i = 0; i < players.length; i++) {
+            outputPlayers.push({
+                playerID: players[i].playerID,
+                name: players[i].name,
             });
         }
         io.to(roomID).emit(ROOM_STATUS, {
             name: roomID,
-            players: players,
+            players: outputPlayers,
             state: allRooms[roomID].state,
             roleCounts: allRooms[roomID].roleCounts,
             time: allRooms[roomID].time,

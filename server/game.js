@@ -14,7 +14,7 @@ function Game(players, roleCounts) {
     if (players.length < 1) {
         throw "invalid number of players";
     }
-    this.players = players;
+    this.players = players.slice();
     this.roleCounts = roleCounts;
 }
 

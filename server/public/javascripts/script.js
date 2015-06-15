@@ -4,7 +4,7 @@ const Roles = [
         "werewolf", "villager", "mason", "seer",
         "robber", "troublemaker", "tanner", "minion",
         ];
-const CARD_SHOW_TIME = 10000;
+const CARD_SHOW_TIME = 9000;
 var me = {};
 var roundEndTime = 0;
 var allRooms = [];
@@ -158,8 +158,6 @@ function refreshRoomStatus() {
 };
 
 socket.on('inform', function(info) {
-    console.log(info);
-    console.log(currentRoomStatus.cardsMap);
     for (var i = 0; i < info.length; i++) {
         var selector = $(currentRoomStatus.cardsMap[info[i].card]);
         selector.find('img').attr('src',
